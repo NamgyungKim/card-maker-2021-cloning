@@ -1,15 +1,31 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom'
 import Header from '../header/header'
 import Footer from '../footer/footer'
 import styles from './login.module.css'
 
 const Login = ({authService}) => {
 
+  const navigate = useNavigate();
+  const goToMaker = userId => {
+    navigate({
+      pathname: '/maker',
+      state: {id: userId},
+    })
+  }
   const onLogin = (e) => {
     authService
       .login(e.currentTarget.textContent)
-      .then(console.log)
+      .then(data => goToMaker(data.user.uid))
   }
+
+  useEffect(()=>{
+    authService
+    .onAuthChange(user => {
+      //사용자가 바뀔때
+      user && goToMaker(user.id)
+    })
+  })
 
   return (
     <section className={styles.login}>
